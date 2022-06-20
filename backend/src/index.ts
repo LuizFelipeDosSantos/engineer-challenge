@@ -22,10 +22,11 @@ app.get('/policies', async (req, res) => {
         ],
       }
       : {};
-  
+
     const policies = await prisma.policy.findMany({
       where: {
         ...or,
+        status: { in: ['ACTIVE', 'PENDING'] },
       },
       select: {
         id: true,
