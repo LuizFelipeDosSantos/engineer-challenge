@@ -1,5 +1,6 @@
 import express from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, PolicyStatus, InsuranceType } from '@prisma/client';
+import { start } from 'repl';
 const cors = require('cors');
 
 const app = express();
@@ -11,23 +12,32 @@ app.use(express.json());
 
 app.get('/policies', async (req, res) => {
   try {
-    const { search } = req.query;
+    const { nameProviderFilter, typeFilter, statusFilter } = req.query;
+    const filterStatus: string[] = statusFilter === 'Status' 
+      ? ['ACTIVE', 'PENDING'] 
+      : [statusFilter as string];
 
-    const or: Prisma.PolicyWhereInput = search
+    const or: Prisma.PolicyWhereInput = nameProviderFilter
       ? {
         OR: [
-          { provider: { contains: search as string, mode: 'insensitive' } },
-          { customer: { firstName: { contains: search as string, mode: 'insensitive' } } },
-          { customer: { lastName: { contains: search as string, mode: 'insensitive' } } }
+          { provider: { contains: nameProviderFilter as string, mode: 'insensitive' } },
+          { customer: { firstName: { contains: nameProviderFilter as string, mode: 'insensitive' } } },
+          { customer: { lastName: { contains: nameProviderFilter as string, mode: 'insensitive' } } }
         ],
       }
       : {};
 
+    const whereFilter = {
+      ...or,
+      status: { in: filterStatus as unknown as PolicyStatus },
+    };
+
+    if(typeFilter !== 'Type'){
+      whereFilter.insuranceType = {equals: typeFilter as unknown as InsuranceType}
+    };
+
     const policies = await prisma.policy.findMany({
-      where: {
-        ...or,
-        status: { in: ['ACTIVE', 'PENDING'] },
-      },
+      where: whereFilter,
       select: {
         id: true,
         provider: true,
