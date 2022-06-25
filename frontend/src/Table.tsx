@@ -1,67 +1,38 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Badge from "./Badge";
 
 const Table = () => {
   const [policyList, setPolicyList] = useState([]);
   const [errorState, setErrorState] = useState('');
-  const [filterState, setFilterState] = useState({
-    nameProvider: '',
-    type: 'Type',
-    status: 'Status',
-  });
+  const [filterNameState, setFilterNameState] = useState('');
+  const [searchState, setSearchState] = useState('');
 
-  useEffect(() => {
-    fetchPolicies(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fetchPolicies = async (hasFilters: boolean) => {
+  const fetchPolicies = useCallback(async () => {
     try {
-      const fetchURL = "http://localhost:4000/policies?" + 
-                       new URLSearchParams({nameProviderFilter: hasFilters ? filterState.nameProvider : '', 
-                                            typeFilter: hasFilters ? filterState.type : 'Type',
-                                            statusFilter: hasFilters ? filterState.status : 'Status'});
-      const response = await fetch(fetchURL);
+      const response = await fetch("http://localhost:4000/policies?" + new URLSearchParams({search: searchState}));
       const policies = await response.json();
       setPolicyList(policies);
     } catch (error) {
       console.log(error);
       setErrorState('Error');
     }
-  };
+  }, [searchState]);
+
+  useEffect(() => {
+    fetchPolicies();
+  }, [fetchPolicies]);
 
   const filterPolicies = () => {
-    fetchPolicies(true);
+    setSearchState(filterNameState);
   };
 
   const clearFilters = () => {
-    setFilterState({
-      nameProvider: '',
-      type: 'Type',
-      status: 'Status',
-    });
-    fetchPolicies(false);
+    setFilterNameState('');
+    setSearchState('');
   };
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterState({
-      ...filterState,
-      nameProvider: event.currentTarget.value
-    });  
-  };
-
-  const handleSelectType = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterState({
-      ...filterState,
-      type: event.currentTarget.value
-    }); 
-  };
-
-  const handleSelectStatus = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterState({
-      ...filterState,
-      status: event.currentTarget.value
-    }); 
+    setFilterNameState(event.currentTarget.value);
   };
 
   if (errorState !== "") {
@@ -76,24 +47,9 @@ const Table = () => {
                 <input className="shadow appearance-none border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       type="text"
                       name="search"
-                      value={filterState.nameProvider}
+                      value={filterNameState}
                       onChange={handleInput}
                       placeholder="Enter Name/Provider" />
-                <select className="block appearance-none w-40 bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                        value={filterState.type}
-                        onChange={handleSelectType}>
-                  <option>Type</option>
-                  <option>LIABILITY</option>
-                  <option>HOUSEHOLD</option>
-                  <option>HEALTH</option>
-                </select>
-                <select className="block appearance-none w-40 bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                        value={filterState.status}
-                        onChange={handleSelectStatus}>
-                  <option>Status</option>
-                  <option>ACTIVE</option>
-                  <option>PENDING</option>
-                </select>
                 <button className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-600 hover:bg-gray-700"
                         onClick={filterPolicies}>Filter
                 </button>
@@ -145,10 +101,8 @@ const Table = () => {
           </div>
         </div>
       </div>
-)
+    )
   }
-
-  
 }
 
 export default Table;
