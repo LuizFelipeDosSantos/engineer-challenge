@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Badge from "./Badge";
 
 const Table = () => {
@@ -7,20 +7,20 @@ const Table = () => {
   const [filterNameState, setFilterNameState] = useState('');
   const [searchState, setSearchState] = useState('');
 
-  const fetchPolicies = useCallback(async () => {
-    try {
-      const response = await fetch("http://localhost:4000/policies?" + new URLSearchParams({search: searchState}));
-      const policies = await response.json();
-      setPolicyList(policies);
-    } catch (error) {
-      console.log(error);
-      setErrorState('Error');
-    }
-  }, [searchState]);
-
   useEffect(() => {
+    const fetchPolicies = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/policies?" + new URLSearchParams({search: searchState}));
+        const policies = await response.json();
+        setPolicyList(policies);
+      } catch (error) {
+        console.log(error);
+        setErrorState('Error');
+      }
+    };
+
     fetchPolicies();
-  }, [fetchPolicies]);
+  }, [searchState]);
 
   const filterPolicies = () => {
     setSearchState(filterNameState);
@@ -49,7 +49,7 @@ const Table = () => {
                       name="search"
                       value={filterNameState}
                       onChange={handleInput}
-                      placeholder="Enter Name/Provider" />
+                      placeholder="Enter Name" />
                 <button className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-600 hover:bg-gray-700"
                         onClick={filterPolicies}>Filter
                 </button>
@@ -83,6 +83,15 @@ const Table = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index + 1}</td>
                       <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                         {policy.customer.firstName} {policy.customer.lastName}
+                        {policy.familyMembers.length > 0
+                          && <>
+                              <br/> <br/>
+                              <b>Family Members:</b>
+                              {policy.familyMembers.map((familyMember: any) => (
+                                <p key={familyMember.id}>{familyMember.firstName} {familyMember.lastName}</p>
+                              ))}
+                            </>
+                        }
                       </td>
                       <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                         {policy.provider}

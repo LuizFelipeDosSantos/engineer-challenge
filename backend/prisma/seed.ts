@@ -13,6 +13,18 @@ const userData: Prisma.CustomerCreateInput[] =  [
         insuranceType: 'HEALTH',
         status: 'PENDING',
         startDate: '2017-04-26T05:32:06Z',
+        familyMembers: {
+          create: [
+            {
+              firstName: 'Jarvis',
+              lastName: 'Farley',
+            },
+            {
+              firstName: 'Margot',
+              lastName: 'Marks',
+            }
+          ]
+        }
       },
     },
   },
@@ -26,6 +38,12 @@ const userData: Prisma.CustomerCreateInput[] =  [
         insuranceType: 'LIABILITY',
         status: 'PENDING',
         startDate: '2015-01-13T04:52:15Z',
+        familyMembers: {
+          create: {
+            firstName: 'Janine',
+            lastName: 'Harbour',
+          }
+        }
       },
     },
   },
@@ -52,6 +70,12 @@ const userData: Prisma.CustomerCreateInput[] =  [
         insuranceType: 'HEALTH',
         status: 'PENDING',
         startDate: '2020-07-21T19:40:35Z',
+        familyMembers: {
+          create: {
+            firstName: 'Alfred',
+            lastName: 'Buxton',
+          }
+        }        
       },
     },
   },
@@ -234,6 +258,12 @@ const userData: Prisma.CustomerCreateInput[] =  [
         insuranceType: 'LIABILITY',
         status: 'PENDING',
         startDate: '2013-11-15T09:58:45Z',
+        familyMembers: {
+          create: {
+            firstName: 'Abbas',
+            lastName: 'Bartlett',
+          }
+        }
       },
     },
   },

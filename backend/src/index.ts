@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient, Prisma, PolicyStatus, InsuranceType } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 const cors = require('cors');
 
 const app = express();
@@ -17,7 +17,9 @@ app.get('/policies', async (req, res) => {
       ? {
         OR: [
           { customer: { firstName: { contains: search as string, mode: 'insensitive' } } },
-          { customer: { lastName: { contains: search as string, mode: 'insensitive' } } }
+          { customer: { lastName: { contains: search as string, mode: 'insensitive' } } },
+          { familyMembers: { some: { firstName: { contains: search as string, mode: 'insensitive' } } } },
+          { familyMembers: { some: { lastName: { contains: search as string, mode: 'insensitive' } } } },
         ],
       }
       : {};
@@ -40,6 +42,13 @@ app.get('/policies', async (req, res) => {
             firstName: true,
             lastName: true,
             dateOfBirth: true
+          }
+        },
+        familyMembers: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
           }
         }
       }
