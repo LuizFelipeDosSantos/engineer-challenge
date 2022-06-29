@@ -6,6 +6,8 @@ const Table = () => {
   const [errorState, setErrorState] = useState('');
   const [filterNameState, setFilterNameState] = useState('');
   const [searchState, setSearchState] = useState('');
+  const [showCustomerFamilyMembers, setShowCustomerFamilyMembers] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchPolicies = async () => {
@@ -13,16 +15,19 @@ const Table = () => {
         const response = await fetch("http://localhost:4000/policies?" + new URLSearchParams({search: searchState}));
         const policies = await response.json();
         setPolicyList(policies);
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
-        setErrorState('Error');
+        setErrorState('Something went wrong!');
       }
     };
 
     fetchPolicies();
+    setShowCustomerFamilyMembers('');
   }, [searchState]);
 
   const filterPolicies = () => {
+    setIsLoading(true);
     setSearchState(filterNameState);
   };
 
@@ -36,7 +41,17 @@ const Table = () => {
   };
 
   if (errorState !== "") {
-    return <p>{errorState}</p>
+    return (
+      <div className="flex flex-col">
+        <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+            <div className="overflow-hidden rounded-lg shadow-sm">
+              <p>{errorState}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      )
   } else {
     return (
       <div className="flex flex-col">
@@ -78,18 +93,33 @@ const Table = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {policyList.map((policy: any, index) => (
+                  {policyList.length > 0 
+                   ?
+                    policyList.map((policy: any, index) => (
                     <tr className="border-b" key={policy.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index + 1}</td>
                       <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                         {policy.customer.firstName} {policy.customer.lastName}
                         {policy.familyMembers.length > 0
                           && <>
-                              <br/> <br/>
-                              <b>Family Members:</b>
-                              {policy.familyMembers.map((familyMember: any) => (
-                                <p key={familyMember.id}>{familyMember.firstName} {familyMember.lastName}</p>
-                              ))}
+                              <br/>
+                              <br/>
+                              {showCustomerFamilyMembers === policy.id
+                              ? <>
+                                  <button className="h-8 px-4 m-2 text-sm text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
+                                    onClick={() => setShowCustomerFamilyMembers('')}>Hide Family Members
+                                  </button>
+                                  <br/>
+                                  <br/>
+                                  <b>Family Members:</b>
+                                  {policy.familyMembers.map((familyMember: any) => (
+                                    <p key={familyMember.id}> {familyMember.firstName} {familyMember.lastName} </p>
+                                  ))}
+                                </>
+                              : <button className="h-8 px-4 m-2 text-sm text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
+                                  onClick={() => setShowCustomerFamilyMembers(policy.id)}>Show Family Members
+                                </button>
+                              }
                             </>
                         }
                       </td>
@@ -103,7 +133,13 @@ const Table = () => {
                         <Badge status={policy.status} />
                       </td>
                     </tr>
-                  ))}
+                  ))
+                  : <tr className="border-b">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {isLoading ? 'Loading data...' : 'No search results'}
+                        </td>
+                    </tr>
+                  }
                 </tbody>
               </table>
             </div>
