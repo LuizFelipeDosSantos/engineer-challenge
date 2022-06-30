@@ -113,11 +113,18 @@ Feel free to update or add more endpoints to accommodate or improve your solutio
 ## General questions
 
 - How much time did you spend working on the solution?
+
+  35-40 hours in 2 weeks
+
 - What’s the part of the solution you are most proud of?
 
-  _You can share a code snippet here if you feel like it_
+  Refactoring the backend, creating service and route
 
 - If you had more time, what other things you would like to do?
+
+  Add tests, create filters by the other fields and do the pagination of the results.
+
 - Do you have any feedback regarding this coding challenge?  
 
-  _Is the initial setup working?, is something missing?, or any other comment_
+  The initial setup is working and was easy to do.
+  It was an interesting challenge working with Docker, Prisma and Typescript.
