@@ -7,9 +7,15 @@
   "private": true,
   "dependencies": {
     "@prisma/client": "3.11.1",
+    "@types/jest": "27.0.0",
+    "@types/supertest": "^2.0.12",
     "cors": "^2.8.5",
     "express": "^4.17.3",
+    "jest": "27.1.0",
+    "jest-mock-extended": "^2.0.6",
     "nodemon": "^2.0.12",
+    "supertest": "^6.2.3",
+    "ts-jest": "27.1.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -21,7 +27,8 @@
     "typescript": "4.6.3"
   },
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon",
+    "test": "docker-compose up -d && jest -i"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

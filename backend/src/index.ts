@@ -14,6 +14,10 @@ app.get('/', (req, res) => {
   res.send('Server is up and running 🚀');
 });
 
-app.listen(port, () => {
-  console.log(`🚀  Server ready at ${port}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`🚀  Server ready at ${port}`);
+  });
+}
+
+export default app;
