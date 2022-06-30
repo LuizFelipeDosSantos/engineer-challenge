@@ -1,8 +1,34 @@
 import { useEffect, useState } from "react";
 import Badge from "./Badge";
 
+interface IFamilyMember {
+  id: string,
+  firstName: string,
+  lastName: string
+}
+
+interface ICustomer {
+  id: string,
+  firstName: string,
+  lastName: string,
+  dateOfBirth: Date
+}
+
+type Status = 'ACTIVE' | 'PENDING' | 'CANCELLED' | 'DROPPED_OUT'
+
+interface IPolicy {
+  id: string,
+  provider: string,
+  insuranceType: string,
+  status: Status,
+  startDate: Date,
+  endDate: Date,
+  customer: ICustomer,
+  familyMembers: IFamilyMember[]
+}
+
 const Table = () => {
-  const [policyList, setPolicyList] = useState([]);
+  const [policyList, setPolicyList] = useState<IPolicy[]>([]);
   const [errorState, setErrorState] = useState('');
   const [filterNameState, setFilterNameState] = useState('');
   const [searchState, setSearchState] = useState('');
@@ -95,7 +121,7 @@ const Table = () => {
                 <tbody>
                   {policyList.length > 0 
                    ?
-                    policyList.map((policy: any, index) => (
+                    policyList.map((policy: IPolicy, index) => (
                     <tr className="border-b" key={policy.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index + 1}</td>
                       <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
@@ -112,7 +138,7 @@ const Table = () => {
                                   <br/>
                                   <br/>
                                   <b>Family Members:</b>
-                                  {policy.familyMembers.map((familyMember: any) => (
+                                  {policy.familyMembers.map((familyMember: IFamilyMember) => (
                                     <p key={familyMember.id}> {familyMember.firstName} {familyMember.lastName} </p>
                                   ))}
                                 </>
